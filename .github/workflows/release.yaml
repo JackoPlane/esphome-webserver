@@ -39,11 +39,16 @@ jobs:
         run: npm run build
         working-directory: packages/${{ matrix.directory }}
 
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _static/${{ matrix.directory }}/
+        
       - uses: actions/upload-artifact@v4.3.1
         with:
           name: ${{ matrix.name }}
-          path: |
-            _static/${{ matrix.directory }}/
+          path: _static/**/*.h
 
   # release:
   #   name: Tag and Release
@@ -88,21 +93,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4.1.4
-        with:
-          merge-multiple: true
-      - name: List files
-        run: ls -lsR .
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: _static/
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
