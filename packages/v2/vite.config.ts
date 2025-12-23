@@ -9,7 +9,7 @@ import { minifyHtml as ViteMinifyHtml } from "vite-plugin-html";
 import stripBanner from "rollup-plugin-strip-banner";
 import replace from "@rollup/plugin-replace";
 
-const proxy_target = process.env.PROXY_TARGET || "http://nodemcu.local";
+const proxy_target = process.env.PROXY_TARGET || "http://standingdesk.local";
 
 export default defineConfig({
   clearScreen: false,
@@ -86,6 +86,7 @@ export default defineConfig({
       "/number": proxy_target,
       "/climate": proxy_target,
       "/events": proxy_target,
+      "/text_sensor": proxy_target,
       "/text": proxy_target,
       "/date": proxy_target,
       "/time": proxy_target,
