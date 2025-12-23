@@ -21,8 +21,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: Captive Portal
-            directory: captive-portal
           - name: Webserver v2
             directory: v2
           - name: Webserver v3
@@ -45,10 +43,7 @@ jobs:
         with:
           name: ${{ matrix.name }}
           path: |
-            _static/**/*.h
-            _static/**/*.html
-            _static/**/*.svg
-            _static/**/*.js
+            _static/${{ matrix.directory }}/
 
   # release:
   #   name: Tag and Release
@@ -85,16 +80,9 @@ jobs:
 
   # Single deploy job since we're just deploying
   deploy:
-    name: Deploy ${{ matrix.name }}
+    name: Deploy
     # Add a dependency to the build job
     needs: build
-    strategy:
-      matrix:
-        include:
-          - name: Webserver v2
-            directory: v2
-          - name: Webserver v3
-            directory: v3
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -105,17 +93,16 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4.1.4
         with:
-          name: ${{ matrix.name }}
           merge-multiple: true
       - name: List files
-        run: ls -R .
+        run: ls -lsR .
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           # Upload entire repository
-          path: ./_static/${{ matrix.directory }}/
+          path: _static/
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
