@@ -67,7 +67,28 @@ multi_actions = [
 
 source.addEventListener('state', function (e) {
     const data = JSON.parse(e.data);
-    document.getElementById(data.id).children[1].innerText = data.state;
+    // New firmware sends id as "domain/name" or "domain/device/name"
+    // Old firmware sends id as "domain-object_id"
+    // Try getElementById first (works for old format), then query by data attributes
+    let row = document.getElementById(data.id);
+    if (!row && data.id.includes('/')) {
+        // New format: parse and find by data attributes
+        const parts = data.id.split('/');
+        const domain = parts[0];
+        if (parts.length === 3) {
+            // domain/device/name
+            const device = CSS.escape(parts[1]);
+            const name = CSS.escape(parts[2]);
+            row = document.querySelector(`tr[data-domain="${domain}"][data-device="${device}"][data-name="${name}"]`);
+        } else {
+            // domain/name
+            const name = CSS.escape(parts[1]);
+            row = document.querySelector(`tr[data-domain="${domain}"][data-name="${name}"]:not([data-device])`);
+        }
+    }
+    if (row && data.state !== undefined) {
+        row.children[1].innerText = data.state;
+    }
 });
 
 // Build URL path for entity
