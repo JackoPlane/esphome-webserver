@@ -39,17 +39,17 @@ jobs:
         run: npm run build
         working-directory: packages/${{ matrix.directory }}
 
-      - name: Upload static files as artifact
-        id: deployment
-        uses: actions/upload-pages-artifact@v4
-        with:
-          name: ${{ matrix.directory }}
-          path: _static/${{ matrix.directory }}/
+      # - name: Upload static files as artifact
+      #   id: deployment
+      #   uses: actions/upload-pages-artifact@v4
+      #   with:
+      #     name: ${{ matrix.directory }}
+      #     path: _static/${{ matrix.directory }}/
         
       - uses: actions/upload-artifact@v4.3.1
         with:
           name: ${{ matrix.name }}
-          path: _static/**/*.h
+          path: _static/${{ matrix.directory }}/*
 
   # release:
   #   name: Tag and Release
@@ -84,11 +84,33 @@ jobs:
   #         files: headers/**/*.h
   #         generate_release_notes: true
 
+  # Merge artifacts
+  merge-artifacts:
+    name: Merge Artifacts
+    # Add a dependency to the build job
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4.1.4
+        with:
+          merge-multiple: true
+      - name: List files
+        run: ls -lsaR .
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _static/
+
   # Single deploy job since we're just deploying
   deploy:
     name: Deploy
     # Add a dependency to the build job
-    needs: build
+    needs: merge-artifacts
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
