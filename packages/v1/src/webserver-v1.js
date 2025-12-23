@@ -113,8 +113,8 @@ function buildEntityUrl(row, action) {
 }
 
 const states = document.getElementById("states");
-let i = 0, row;
-for (; row = states.rows[i]; i++) {
+for (let i = 0; i < states.rows.length; i++) {
+    const row = states.rows[i];  // Block-scoped copy for closure
     if (!row.children[2].children.length) {
         continue;
     }
@@ -122,9 +122,10 @@ for (; row = states.rows[i]; i++) {
     for (const domain of actions){
         if (row.classList.contains(domain[0])) {
             for (let j=0;j<row.children[2].children.length && j < domain[1].length; j++){
+                const action = domain[1][j];  // Block-scoped copy for closure
                 row.children[2].children[j].addEventListener('click', function () {
                     const xhr = new XMLHttpRequest();
-                    xhr.open("POST", buildEntityUrl(row, domain[1][j]), true);
+                    xhr.open("POST", buildEntityUrl(row, action), true);
                     xhr.send();
                 });
             }
@@ -132,9 +133,10 @@ for (; row = states.rows[i]; i++) {
     }
     for (const domain of multi_actions){
         if (row.classList.contains(domain[0])) {
+            const field = domain[1];  // Block-scoped copy for closure
             row.children[2].children[0].addEventListener('change', function () {
                 const xhr = new XMLHttpRequest();
-                xhr.open("POST", buildEntityUrl(row, 'set') + '?' + domain[1] + '=' + encodeURIComponent(this.value), true);
+                xhr.open("POST", buildEntityUrl(row, 'set') + '?' + field + '=' + encodeURIComponent(this.value), true);
                 xhr.send();
             });
         }
