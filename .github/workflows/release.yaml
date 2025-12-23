@@ -100,6 +100,14 @@ jobs:
           merge-multiple: true
       - name: List files
         run: ls -lsaR .
+      - name: Create output directory
+        run: mkdir _static
+      - name: Move Artifacts
+        run: |
+          mv v2/ _static/v2/
+          mv v3/ _static/v3/
+      - name: List files
+        run: ls -lsaR .
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v4
