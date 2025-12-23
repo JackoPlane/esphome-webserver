@@ -156,7 +156,7 @@ export class EntityTable extends LitElement implements RestAction {
           ${this.entities.map(
             (component) => html`
               <tr>
-                <td>${component.name}</td>
+                <td>${component.device ? `[${component.device}] ` : ''}${component.name}</td>
                 <td>${component.state}</td>
                 ${this.has_controls
                   ? html`<td>
