@@ -43,7 +43,7 @@ jobs:
         id: deployment
         uses: actions/upload-pages-artifact@v4
         with:
-          name: ${{ matrix.name }}
+          name: ${{ matrix.directory }}
           path: _static/${{ matrix.directory }}/
         
       - uses: actions/upload-artifact@v4.3.1
@@ -99,8 +99,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: v3
+        # with:
+        #   artifact_name: v3
 
   # esphome-pr:
   #   name: Make PR into ESPHome repo
