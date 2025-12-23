@@ -97,7 +97,17 @@ function buildEntityActionUrl(basePath: string, entity: entityConfig, action: st
 
 function buildIdFetchUrl(basePath: string, id: string): string {
   // URL-encode each path segment for fetching detail_all
-  const urlPath = id.split('/').map((s: string) => encodeURIComponent(s)).join('/');
+  let urlPath: string;
+  if (isNewIdFormat(id)) {
+    // New format: domain/name or domain/device/name
+    urlPath = id.split('/').map((s: string) => encodeURIComponent(s)).join('/');
+  } else {
+    // Old format: domain-object_id -> domain/object_id
+    const parts = id.split('-');
+    const domain = parts[0];
+    const objectId = parts.slice(1).join('-');
+    urlPath = `${domain}/${encodeURIComponent(objectId)}`;
+  }
   return `${basePath}/${urlPath}?detail=all`;
 }
 
